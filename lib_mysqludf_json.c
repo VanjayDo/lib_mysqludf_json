@@ -50,8 +50,8 @@ typedef long long longlong;
 #ifdef HAVE_DLOPEN
 
 #define JSON_VALUES 0
-#define JSON_ARRAY 1
-#define JSON_OBJECT 2
+#define UDF_JSON_ARRAY 1
+#define UDF_JSON_OBJECT 2
 #define JSON_MEMBERS 3
 #define LIBVERSION "lib_mysqludf_json version 0.0.2"
 #define JSON_RESULT 127
@@ -127,19 +127,19 @@ char* json_values(
  */
 
 DLLEXP 
-my_bool json_array_init(
+my_bool udf_json_array_init(
 	UDF_INIT *initid
 ,	UDF_ARGS *args
 ,	char *message
 );
 
 DLLEXP 
-void json_array_deinit(
+void udf_json_array_deinit(
 	UDF_INIT *initid
 );
 
 DLLEXP 
-char* json_array(
+char* udf_json_array(
 	UDF_INIT *initid
 ,	UDF_ARGS *args
 ,	char *result
@@ -152,19 +152,19 @@ char* json_array(
  * 	JSON OBJECT
  */
 DLLEXP 
-my_bool json_object_init(
+my_bool udf_json_object_init(
 	UDF_INIT *initid
 ,	UDF_ARGS *args
 ,	char *message
 );
 
 DLLEXP 
-void json_object_deinit(
+void udf_json_object_deinit(
 	UDF_INIT *initid
 );
 
 DLLEXP 
-char* json_object(
+char* udf_json_object(
 	UDF_INIT *initid
 ,	UDF_ARGS *args
 ,	char *result
@@ -311,13 +311,13 @@ my_bool prepare_json(
 	unsigned long string_buffer_length = 0;
 	unsigned long other_buffer_length = 0;
 	
-	if(	type==JSON_OBJECT
-	||	type==JSON_ARRAY){
+	if(	type==UDF_JSON_OBJECT
+	||	type==UDF_JSON_ARRAY){
 		//add 2 for the opening and closing delimiters
 		other_buffer_length += 2;
 	}
 	for(i=0; i<args->arg_count; i++){
-		if(type==JSON_OBJECT){
+		if(type==UDF_JSON_OBJECT){
 			if(is_valid_json_member_name(
 				args->attributes[i]
 			,	&args->attribute_lengths[i]
@@ -328,7 +328,7 @@ my_bool prepare_json(
 			}
 			//add member name, colon and comma, and enclosing double quotes
 			other_buffer_length += args->attribute_lengths[i] + 1 + 1 + 2; 
-		} else if (type==JSON_ARRAY){
+		} else if (type==UDF_JSON_ARRAY){
 			//add comma
 			other_buffer_length += 1;
 		}
@@ -447,7 +447,7 @@ my_bool json_init2(
 /*
  * 	json_init
  * 
- * 	xxx_init function for json_array and json_object
+ * 	xxx_init function for udf_json_array and udf_json_object
  * 
  * 	The main job of this function is to allocate memory to 
  *  repeatedly render the desired JSON array or object.
@@ -527,7 +527,7 @@ my_bool json_init(
 				arg_types[i]=args->arg_type[i];
 			}
 			/* calculate the maximum required buffer for this argument */
-			if(type==JSON_OBJECT
+			if(type==UDF_JSON_OBJECT
 			&&	arg_types[i]!=JSON_RESULT
 			){
 				/*
@@ -631,7 +631,7 @@ my_bool json_init(
 /*
  * 	json_deinit
  * 
- * 	xxx_deinit function for json_array and json_object
+ * 	xxx_deinit function for udf_json_array and udf_json_object
  */
 void json_deinit(
 	UDF_INIT *initid
@@ -756,11 +756,11 @@ char* json(
 
 	unsigned long i;
 	switch(type){						//add opening delimiter
-		case JSON_ARRAY:
+		case UDF_JSON_ARRAY:
 			*buffer = '[';
 			buffer++;
 			break;
-		case JSON_OBJECT:
+		case UDF_JSON_OBJECT:
 			*buffer = '{';
 			buffer++;
 			break;
@@ -788,7 +788,7 @@ char* json(
 				} else {
 					break;
 				}
-			case JSON_OBJECT:
+			case UDF_JSON_OBJECT:
 				if(arg_types[i]!=JSON_RESULT){
 					*buffer = '"';
 					buffer++;
@@ -824,11 +824,11 @@ char* json(
 	}
 	//add closing delimiter
 	switch(type){
-		case JSON_ARRAY:
+		case UDF_JSON_ARRAY:
 			*buffer = ']';
 			buffer++;
 			break;
-		case JSON_OBJECT:
+		case UDF_JSON_OBJECT:
 			*buffer = '}';
 			buffer++;
 		default:
@@ -919,7 +919,7 @@ char* json_values(
 /*
  * 	JSON ARRAY
  */
-my_bool json_array_init(
+my_bool udf_json_array_init(
 	UDF_INIT *initid
 ,	UDF_ARGS *args
 ,	char *message
@@ -928,17 +928,17 @@ my_bool json_array_init(
 		initid
 	,	args
 	,	message
-	,	JSON_ARRAY
+	,	UDF_JSON_ARRAY
 	);
 }
-void json_array_deinit(
+void udf_json_array_deinit(
 	UDF_INIT *initid
 ){	
 	json_deinit(
 		initid
 	);
 }
-char* json_array(
+char* udf_json_array(
 	UDF_INIT *initid
 ,	UDF_ARGS *args
 ,	char *result
@@ -953,14 +953,14 @@ char* json_array(
 	,	length
 	,	is_null
 	,	error
-	,	JSON_ARRAY
+	,	UDF_JSON_ARRAY
 	);
 }
 
 /*
  * 	JSON OBJECT
  */
-my_bool json_object_init(
+my_bool udf_json_object_init(
 	UDF_INIT *initid
 ,	UDF_ARGS *args
 ,	char *message
@@ -969,17 +969,17 @@ my_bool json_object_init(
 		initid
 	,	args
 	,	message
-	,	JSON_OBJECT
+	,	UDF_JSON_OBJECT
 	);
 }
-void json_object_deinit(
+void udf_json_object_deinit(
 	UDF_INIT *initid
 ){	
 	json_deinit(
 		initid
 	);
 }
-char* json_object(
+char* udf_json_object(
 	UDF_INIT *initid
 ,	UDF_ARGS *args
 ,	char *result
@@ -994,7 +994,7 @@ char* json_object(
 	,	length
 	,	is_null
 	,	error
-	,	JSON_OBJECT
+	,	UDF_JSON_OBJECT
 	);
 }
 /**

@@ -20,13 +20,13 @@
 */
 
 drop function lib_mysqludf_json_info;
-drop function json_array;
+drop function udf_json_array;
 drop function json_members;
-drop function json_object;
+drop function udf_json_object;
 drop function json_values;
 
 create function lib_mysqludf_json_info returns string soname 'lib_mysqludf_json.so';
-create function json_array returns string soname 'lib_mysqludf_json.so';
+create function udf_json_array returns string soname 'lib_mysqludf_json.so';
 create function json_members returns string soname 'lib_mysqludf_json.so';
-create function json_object returns string soname 'lib_mysqludf_json.so';
+create function udf_json_object returns string soname 'lib_mysqludf_json.so';
 create function json_values returns string soname 'lib_mysqludf_json.so';
